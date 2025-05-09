@@ -169,3 +169,17 @@ function changeNavOnScroll() {
 window.addEventListener('scroll', changeNavOnScroll);
 // Initial check in case page loads scrolled down
 changeNavOnScroll();
+
+// Внутри fetch в script.js
+data.forEach(dish => {
+    const div = document.createElement('div');
+    div.className = 'col-md-4';
+    div.innerHTML = `
+        <div class="form-check">
+            <input type="checkbox" class="form-check-input" name="dishes" id="dish_${dish.id}" value="${dish.id}">
+            <label class="form-check-label" for="dish_${dish.id}">${dish.name} – $${dish.price}</label>
+            <input type="number" name="quantity_${dish.id}" value="1" min="1" class="form-control form-control-sm d-inline-block w-auto">
+        </div>
+    `;
+    dishesContainer.appendChild(div);
+});

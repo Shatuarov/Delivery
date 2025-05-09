@@ -12,7 +12,7 @@ SECRET_KEY = 'django-insecure-k#9v$2x!q5w&z8m(h4w)c1l-e7r+t3n9o0u@j5y_d2f*b6'
 
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1']
+ALLOWED_HOSTS = ['*']
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -29,6 +29,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -106,3 +107,4 @@ REST_FRAMEWORK = {
 LOGIN_REDIRECT_URL = 'home'  # Куда перенаправлять после входа
 LOGOUT_REDIRECT_URL = 'home'  # Куда перенаправлять после выхода
 LOGIN_URL = 'login'  # URL для входа
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
