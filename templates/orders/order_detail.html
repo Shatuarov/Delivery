@@ -1,0 +1,88 @@
+{% extends 'main/base.html' %}
+
+{% block title %}Детали заказа #{{ order.id }} - Delivery_AI{% endblock %}
+
+{% block content %}
+<section class="section-padding">
+    <div class="container">
+        <h2 class="section-heading">Детали заказа #{{ order.id }}</h2>
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Информация о заказе</h5>
+                <div class="row">
+                    <div class="col-md-4">
+                        {% if order.restaurant.image %}
+                            <img src="{{ order.restaurant.image.url }}" alt="{{ order.restaurant.name }}" class="img-fluid mb-3">
+                        {% else %}
+                            <p>Изображение ресторана отсутствует.</p>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-8">
+                        <p><strong>Клиент:</strong> {{ order.customer.user.username }}</p>
+                        <p><strong>Ресторан:</strong> {{ order.restaurant.name }}</p>
+                        <p><strong>Адрес доставки:</strong> {{ order.delivery_address }}</p>
+                        <p><strong>Статус:</strong> {{ order.status }}</p>
+                        <p><strong>Общая стоимость:</strong> ${{ order.total_price }}</p>
+                        <p><strong>Дата создания:</strong> {{ order.created_at }}</p>
+                    </div>
+                </div>
+
+                <h5 class="mt-4">Состав заказа</h5>
+                <div id="issue-alert" class="alert alert-warning d-none" role="alert"></div>
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Изображение</th>
+                            <th>Блюдо</th>
+                            <th>Цена за единицу</th>
+                            <th>Количество</th>
+                            <th>Итого</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in order.orderitem_set.all %}
+                            <tr>
+                                <td>
+                                    {% if item.menu_item.image %}
+                                        <img src="{{ item.menu_item.image.url }}" alt="{{ item.menu_item.name }}" class="img-fluid" style="max-width: 50px;">
+                                    {% else %}
+                                        Нет изображения
+                                    {% endif %}
+                                </td>
+                                <td>{{ item.menu_item.name }}</td>
+                                <td>${{ item.menu_item.price }}</td>
+                                <td>{{ item.quantity }}</td>
+                                <td>${{ item.get_total|floatformat:2 }}</td>
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td colspan="5">Блюда не выбраны.</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+
+                <a href="{% url 'order_list' %}" class="btn btn-secondary">Вернуться к списку заказов</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Проверка на возможные проблемы
+    fetch('/orders/{{ order.id }}/predict-issue/')
+        .then(response => response.json())
+        .then(data => {
+            const issueAlert = document.getElementById('issue-alert');
+            if (data.status === 'success' && data.has_issue) {
+                issueAlert.classList.remove('d-none');
+                issueAlert.innerHTML = `Внимание! Возможны проблемы с доставкой. Вероятность: ${(data.probability * 100).toFixed(1)}%`;
+            }
+        })
+        .catch(error => {
+            console.error('Ошибка предсказания проблем:', error);
+        });
+});
+</script>
+{% endblock %}

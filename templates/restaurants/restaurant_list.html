@@ -1,0 +1,32 @@
+{% extends 'main/base.html' %}
+
+{% block title %}Список ресторанов - Delivery_AI{% endblock %}
+
+{% block content %}
+<section class="section-padding">
+    <div class="container">
+        <h2 class="section-heading">Список ресторанов</h2>
+        <div class="row">
+            {% for restaurant in restaurants %}
+                <div class="col-md-4 mb-4">
+                    <div class="card">
+                        {% if restaurant.image %}
+                            <img src="{{ restaurant.image.url }}" alt="{{ restaurant.name }}" class="card-img-top" style="height: 200px; object-fit: cover;">
+                        {% endif %}
+                        <div class="card-body">
+                            <h5 class="card-title">{{ restaurant.name }}</h5>
+                            <p class="card-text">{{ restaurant.address }}</p>
+                            <p class="card-text">Телефон: {{ restaurant.phone }}</p>
+                            <a href="{% url 'restaurant_detail' restaurant.pk %}" class="btn btn-primary">Подробнее</a>
+                        </div>
+                    </div>
+                </div>
+            {% empty %}
+                <div class="col-12">
+                    <p class="text-muted">Ресторанов нет.</p>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock %}

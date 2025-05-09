@@ -1,0 +1,53 @@
+{% extends 'main/base.html' %}
+
+{% block title %}{{ restaurant.name }} - Delivery_AI{% endblock %}
+
+{% block content %}
+<section class="section-padding">
+    <div class="container">
+        <h2 class="section-heading">{{ restaurant.name }}</h2>
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        {% if restaurant.image %}
+                            <img src="{{ restaurant.image.url }}" alt="{{ restaurant.name }}" class="img-fluid mb-3" style="max-height: 300px; object-fit: cover;">
+                        {% else %}
+                            <p class="text-muted">Изображение отсутствует.</p>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-8">
+                        <h5 class="card-title">Информация о ресторане</h5>
+                        <p><strong>Адрес:</strong> {{ restaurant.address }}</p>
+                        <p><strong>Телефон:</strong> {{ restaurant.phone }}</p>
+                    </div>
+                </div>
+
+                <h5 class="mt-4">Меню</h5>
+                <div class="row">
+                    {% for item in restaurant.menu_items.all %}
+                        <div class="col-md-4 mb-4">
+                            <div class="card">
+                                {% if item.image %}
+                                    <img src="{{ item.image.url }}" alt="{{ item.name }}" class="card-img-top" style="height: 150px; object-fit: cover;">
+                                {% endif %}
+                                <div class="card-body">
+                                    <h6 class="card-title">{{ item.name }}</h6>
+                                    <p class="card-text">{{ item.description }}</p>
+                                    <p class="card-text"><strong>Цена:</strong> ${{ item.price }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    {% empty %}
+                        <div class="col-12">
+                            <p class="text-muted">Меню пусто.</p>
+                        </div>
+                    {% endfor %}
+                </div>
+
+                <a href="{% url 'restaurant_list' %}" class="btn btn-secondary">Вернуться к списку ресторанов</a>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

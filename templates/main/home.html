@@ -1,0 +1,86 @@
+<!-- templates/main/home.html -->
+{% extends 'main/base.html' %}
+{% load static %}
+{% block title %}Delivery_AI - Система доставки{% endblock %}
+{% block content %}
+    <!-- Hero Section -->
+    <section id="hero">
+        <div class="container">
+            <h1>Быстрая доставка еды</h1>
+            <p>Закажите еду из лучших ресторанов с доставкой прямо к вам домой.</p>
+            <a href="{% url 'order_create' %}" class="btn btn-primary btn-lg">Сделать заказ</a>
+        </div>
+    </section>
+
+    <!-- Popular Restaurants Section -->
+    <section id="restaurants" class="section-padding">
+        <div class="container">
+            <h2 class="section-heading">Популярные рестораны</h2>
+            <div class="row g-4">
+                {% for restaurant in restaurants %}
+                    <div class="col-lg-3 col-md-6 d-flex">
+                        <div class="restaurant-card w-100">
+                            {% if restaurant.image %}
+                                <img src="{{ restaurant.image.url }}" class="card-img-top" alt="{{ restaurant.name }}">
+                            {% else %}
+                                <img src="{% static 'images/default_restaurant.jpg' %}" class="card-img-top" alt="{{ restaurant.name }}">
+                            {% endif %}
+                            <div class="card-body">
+                                <div>
+                                    <h5 class="card-title">{{ restaurant.name }}</h5>
+                                    <p class="card-text">{{ restaurant.address }}</p>
+                                </div>
+                                <a href="{% url 'restaurant_detail' restaurant.pk %}" class="btn btn-secondary mt-auto">Посмотреть меню</a>
+                            </div>
+                        </div>
+                    </div>
+                {% empty %}
+                    <p>Рестораны пока недоступны.</p>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+
+    <!-- Recent Orders Section -->
+    <section id="orders" class="section-padding">
+        <div class="container">
+            <h2 class="section-heading">Последние заказы</h2>
+            <div class="row g-4">
+                {% for order in orders %}
+                    <div class="col-lg-3 col-md-6 d-flex">
+                        <div class="order-card w-100">
+                            <div class="card-body">
+                                <div>
+                                    <h5 class="card-title">Заказ #{{ order.id }}</h5>
+                                    <p class="card-text">Ресторан: {{ order.restaurant.name }}</p>
+                                    <p class="card-text">Статус: {{ order.status }}</p>
+                                    <p class="card-text">Цена: ${{ order.total_price }}</p>
+                                </div>
+                                <a href="{% url 'order_detail' order.pk %}" class="btn btn-secondary mt-auto">Подробнее</a>
+                            </div>
+                        </div>
+                    </div>
+                {% empty %}
+                    <p>Заказы пока отсутствуют.</p>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="section-padding">
+        <div class="container">
+            <div class="row align-items-center g-5">
+                <div class="col-lg-6">
+                    <img src="https://images.unsplash.com/photo-1586790170083-2f9bd472c579?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="About Delivery_AI" class="img-fluid">
+                </div>
+                <div class="col-lg-6">
+                    <h2 class="section-heading text-start">О Delivery_AI</h2>
+                    <p>Delivery_AI — это удобная платформа для заказа еды с доставкой. Мы сотрудничаем с лучшими ресторанами, чтобы вы могли наслаждаться любимыми блюдами, не выходя из дома.</p>
+                    <p>Мы гарантируем быструю доставку, качественное обслуживание и широкий выбор ресторанов на любой вкус.</p>
+                    <a href="{% url 'restaurant_list' %}" class="btn btn-primary mt-3">Посмотреть рестораны</a>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}
