@@ -49,9 +49,11 @@
                         <a class="nav-link" href="#footer">Контакты</a>
                     </li>
                     {% if user.is_authenticated %}
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'logout' %}">Выйти ({{ user.username }})</a>
-                        </li>
+                        <form method="post" action="{% url 'logout' %}">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-link nav-link">Выйти ({{ user.username }})</button>
+</form>
+
                     {% else %}
                         <li class="nav-item">
                             <a class="nav-link" href="{% url 'login' %}">Войти</a>
@@ -124,5 +126,7 @@
 
     <!-- Custom JS -->
     <script src="{% static 'js/script.js' %}"></script>
+{% include "chatbot/chatbot.html" %}
+
 </body>
 </html>
