@@ -1,0 +1,176 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>DeliveryAI Чат-Бот</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        #chat-icon {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            font-size: 30px;
+            cursor: pointer;
+            z-index: 1000;
+        }
+
+        #chat-box {
+            display: none;
+            position: fixed;
+            bottom: 70px;
+            right: 20px;
+            width: 300px;
+            background: #fff;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.2);
+            z-index: 999;
+            overflow: hidden;
+        }
+
+        #chat-header {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        #chat-messages {
+            padding: 10px;
+            height: 250px;
+            overflow-y: auto;
+        }
+
+        #chat-input-container {
+            display: flex;
+            border-top: 1px solid #ccc;
+        }
+
+        #chat-input {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            outline: none;
+        }
+
+        #send-button {
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        .chat-btns {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            padding: 10px;
+        }
+
+        .chat-btns button {
+            flex: 1;
+            padding: 6px;
+            border: none;
+            background-color: #eee;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        .user-message {
+            text-align: right;
+            margin: 5px 0;
+        }
+
+        .bot-message {
+            text-align: left;
+            margin: 5px 0;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Иконка чата -->
+<div id="chat-icon" onclick="toggleChat()">
+  <img src="{% static 'img/chat-icon.png' %}" alt="Chat" width="40">
+</div>
+
+<!-- Окно чата -->
+<div id="chat-box">
+    <div id="chat-header">🤖 DeliveryAI Чат</div>
+    <div id="chat-messages"></div>
+
+    <div class="chat-btns">
+        <button onclick="sendPredefined('Где мой заказ?')">Где мой заказ?</button>
+        <button onclick="sendPredefined('Хочу изменить адрес')">Изменить адрес</button>
+        <button onclick="sendPredefined('Отменить заказ')">Отменить заказ</button>
+    </div>
+
+    <div id="chat-input-container">
+        <input type="text" id="chat-input" placeholder="Введите сообщение...">
+        <button id="send-button" onclick="sendMessage()">➡️</button>
+    </div>
+</div>
+
+<script>
+    function toggleChat() {
+        const box = document.getElementById("chat-box");
+        box.style.display = box.style.display === "none" ? "block" : "none";
+    }
+
+    function appendMessage(message, sender) {
+        const chatMessages = document.getElementById("chat-messages");
+        const messageDiv = document.createElement("div");
+        messageDiv.className = sender === "user" ? "user-message" : "bot-message";
+        messageDiv.innerText = message;
+        chatMessages.appendChild(messageDiv);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    function sendMessage() {
+        const input = document.getElementById("chat-input");
+        const message = input.value.trim();
+        if (message) {
+            appendMessage(message, "user");
+            fetch("/api/send_message/", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded",
+                    "X-CSRFToken": getCSRFToken()
+                },
+                body: "message=" + encodeURIComponent(message)
+            })
+            .then(response => response.json())
+            .then(data => {
+                appendMessage(data.response, "bot");
+            });
+            input.value = "";
+        }
+    }
+
+    function sendPredefined(text) {
+        document.getElementById("chat-input").value = text;
+        sendMessage();
+    }
+
+    function getCSRFToken() {
+        const name = "csrftoken";
+        const cookies = document.cookie.split(";");
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.startsWith(name + "=")) {
+                return decodeURIComponent(cookie.substring(name.length + 1));
+            }
+        }
+        return "";
+    }
+</script>
+
+</body>
+</html>
